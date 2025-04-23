@@ -9,9 +9,11 @@ from .views import AnnotationList, AnnotationDetail
 from .views import ResponseList, ResponseDetail
 from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
 from .views import StatisticsAPI
-
+from django.urls import path
+from .views import set_secure_cookie
 
 urlpatterns = [
+    path('set-cookie/', set_secure_cookie, name='set-cookie'),
     path('me', Me.as_view(), name='me'),
     path('features', Features.as_view(), name='features'),
     path('cloud-upload', CloudUploadAPI.as_view(), name='cloud_uploader'),
@@ -41,6 +43,7 @@ urlpatterns = [
          TextUploadAPI.as_view(), name='doc_uploader'),
     path('projects/<int:project_id>/docs/download',
          TextDownloadAPI.as_view(), name='doc_downloader')
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])

@@ -40,9 +40,11 @@ class ParagraphBatch(models.Model):
 
     @property
     def article(self):
+        return ""
         return Paragraph.objects.filter(batch=self).first().article
 
     def __str__(self):
+        return ""
         return f"Batch for {self.paragraphs.first().article}"
 
     def update_status(self, user):

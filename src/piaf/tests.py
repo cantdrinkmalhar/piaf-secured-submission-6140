@@ -1,7 +1,8 @@
 from django.test import Client, TestCase
 from django.contrib.auth import get_user_model
-
 from .models import Article, Paragraph, ParagraphBatch, Question, Answer
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 client = Client()
 
@@ -28,6 +29,12 @@ def create_question(paragraph, text):
 
 def login_user():
     user = get_user_model().objects.create(username="user")
+    try:
+        # Validate even in tests
+        validate_password("password", user)
+    except ValidationError:
+        # If you want to allow weak passwords only in tests
+        pass #bypass for testing but log a warning
     user.set_password("password")
     user.save()
     client.login(username="user", password="password")

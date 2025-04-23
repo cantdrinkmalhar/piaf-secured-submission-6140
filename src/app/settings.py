@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "anymail",
     "piaf",
     "account",
+    "app",
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env("CLOUD_BROWSER_LIBCLOUD_PROVIDER", None)
@@ -107,6 +108,22 @@ TEMPLATES = [
         },
     }
 ]
+
+#Security settings
+
+# Core settings
+#SECRET_KEY = 'django-insecure-^3sil-whgw+gkm!32#t4b(&r0w3=)b2ugdzv9!e6&-qecesi%%'
+#DEBUG = False  # Always False in production
+#ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# Security Headers
+
+SESSION_COOKIE_SECURE = True      # Only send over HTTPS
+SESSION_COOKIE_HTTPONLY = True    # Block JavaScript access
+CSRF_COOKIE_SECURE = True         # CSRF cookie HTTPS-only
+CSRF_COOKIE_HTTPONLY = True       # Block JavaScript access (optional for CSRF)
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -224,30 +241,43 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 IMPORT_BATCH_SIZE = env.int("IMPORT_BATCH_SIZE", 500)
 
 
+
 ## necessary for email verification setup
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'random@gmail.com'
-# EMAIL_HOST_PASSWORD = 'gfds6jk#4ljIr%G8%'
-# EMAIL_PORT = 587
-#
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_HOST_USER = 'random@gmail.com'
+#EMAIL_HOST_PASSWORD = 'gfds6jk#4ljIr%G8%'
+#EMAIL_PORT = 587
 
-MAILJET_API_KEY = env("MAILJET_API_KEY", None)
-MAILJET_SECRET_KEY = env("MAILJET_SECRET_KEY", None)
-USE_MAILJET = env.bool("USE_MAILJET", False)
-DEFAULT_FROM_EMAIL = "piaf@data.gouv.fr"
+#MAILJET CONFIGURATION (commented out for local development)
+#MAILJET_API_KEY = env("MAILJET_API_KEY", None)
+#MAILJET_SECRET_KEY = env("MAILJET_SECRET_KEY", None)
+#USE_MAILJET = env.bool("USE_MAILJET", False)
+#DEFAULT_FROM_EMAIL = "piaf@data.gouv.fr"
 
-WEBPACK_ENVIRONMENT_PRODUCTION = env.bool("WEBPACK_ENVIRONMENT_PRODUCTION", True)
-MATOMO_SITE_ID = env("MATOMO_SITE_ID", "")
+#WEBPACK_ENVIRONMENT_PRODUCTION = env.bool("WEBPACK_ENVIRONMENT_PRODUCTION", True)
+#MATOMO_SITE_ID = env("MATOMO_SITE_ID", "")
 
 # information here: https://anymail.readthedocs.io/en/stable/esps/mailjet/
-ANYMAIL = {"MAILJET_API_KEY": MAILJET_API_KEY, "MAILJET_SECRET_KEY": MAILJET_SECRET_KEY}
+#ANYMAIL = {"MAILJET_API_KEY": MAILJET_API_KEY, "MAILJET_SECRET_KEY": MAILJET_SECRET_KEY}
 
-if USE_MAILJET:
-    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
-else:
-    ## During development only
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#if USE_MAILJET:
+#    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
+#else:
+   ## During development only
+#    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#    EMAIL_HOST = 'localhost'
+#    EMAIL_PORT = 1025
+#    EMAIL_USE_TLS = False
+#    EMAIL_USE_SSL = False
+
+
+#MailHog configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
 
 LOGGING = {
     "version": 1,

@@ -2,6 +2,8 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, F
+from django.http import HttpResponse
+
 from libcloud.base import DriverType, get_driver
 from libcloud.storage.types import ContainerDoesNotExistError, ObjectDoesNotExistError
 from rest_framework import generics, filters, status
@@ -21,6 +23,20 @@ from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser, iterable
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
+from urllib.parse import urlparse
+
+def set_secure_cookie(request):
+    response = HttpResponse("Secure cookie set!")
+    response.set_cookie(
+        key='auth_token',
+        value='test_token_123',
+        secure=True,     # Set to False in development (DEBUG=True)
+        httponly=True,
+        samesite='Lax',
+        max_age=3600,
+        path='/api/',
+    )
+    return response
 
 class Me(APIView):
     permission_classes = (IsAuthenticated,)
@@ -302,9 +318,20 @@ class CloudUploadAPI(APIView):
             return Response(data='', content_type='text/plain', status=status.HTTP_201_CREATED)
 
         if next_url:
-            return redirect(next_url)
+            allowed_hosts = {request.get_host()}
+            if url_has_allowed_host_and_scheme(
+                url=next_url,
+                allowed_hosts=allowed_hosts,
+                require_https=request.is_secure()
+            ):
+                return redirect(next_url)
+            return Response(
+                {'error': 'Invalid redirect URL'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response(status=status.HTTP_201_CREATED)
+
 
     @classmethod
     def get_cloud_object_as_io(cls, container_name, object_name):
